@@ -17,7 +17,7 @@ Jiffy-V can handle the following types:
  - `null`
  - `any` ('any' type matches any erlang term)
  - `hash` (or associative array, key-value array)
- - `typed` list
+ - typed `list`
  - `enum` (a number of predefined values)
 
 The last three types are composite; this means, that this types can be root types of your message map. But something tells us that in most cases root type of your message map will me `hash`.
@@ -72,7 +72,7 @@ Using this you can build more complicated maps. For example, 3d-array of integer
 Usage
 -----
 
-After describing the map you can start validation routines. Just call `jiffy_v:validate(Map, Data)`. Result of this call is a tuple {Errors, Result}, so you can use this snippet:
+After describing the map you can start validation routines. Just call `jiffy_v:validate(Map, Data)`. Result of this call is a tuple `{Errors, Result}`, so you can use this snippet:
 
 ```erlang
 case jiffy_v:validate(Map, Data) of 
@@ -85,7 +85,7 @@ end
 
 
 
-`Errors` tuple element is a list of error tuples. Each error is `{ErrorCode, FieldPath}` tuple; ErrorCode is one of predefined binary strings describing the error occured (this description can be overwritten) and FieldPath is string like <<"field.0.anotherfield.5.errorfield">> (very similar to XPath).
+`Errors` tuple element is a list of error tuples. Each error is `{ErrorCode, FieldPath}` tuple; `ErrorCode` is one of predefined binary strings describing the error occured (this description can be overwritten) and `FieldPath` is string like `<<"field.0.anotherfield.5.errorfield">>` (very similar to XPath).
 
 `Result` is Jiffy-like term, containing only valid and mapped values; e.g. if you are not describing field `foo` in your root hash, this field will never pass to result term, even this field passes with decoded JSON to validator.
 
