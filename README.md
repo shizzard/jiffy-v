@@ -143,3 +143,20 @@ Todo tasks
 
 1. Validator function is not called in case of undefined required hash field; This makes validator function as a provider of default values unusable.
 2. Hash fields can be defined as multityped like lists, e.g. `{<<"hashfield">>, required, [{integer}, {string}]}`.
+3. We can define `soft_list` type, which will be opposite to `strong_list` type, e.g. `{soft_list, [{string}, {integer}]}` will mean "list of strings or integers", not "list of strings or list of integers".
+4. Sometimes it may be useful to return erroneous field value in error tuple: `{ErrorCode, FieldPath, ErroneousValue}`. **NB**: this can be aaplied only to elementary types, not composite ones.
+5. It may be useful to add a little function to get data from decoded JSON term with XPath-style:
+
+```erlang
+get(undefined, _Keys) ->
+    {error, undefined};
+get(Value, Key) when not is_list(Key) ->
+    get(Value, [Key]);
+get(Value, []) ->
+    {ok, Value};
+get({Proplist}, [Key | Keys]) ->
+    Struct = proplists:get_value(Key, Proplist),
+    get(Struct, Keys);
+get(_Value, Keys) ->
+    get(undefined, Keys).
+```
