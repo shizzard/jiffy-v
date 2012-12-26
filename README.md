@@ -85,7 +85,7 @@ end
 
 
 
-`Errors` tuple element is a list of error tuples. Each error is `{ErrorCode, FieldPath}` tuple; `ErrorCode` is one of predefined binary strings describing the error occured (this description can be overwritten) and `FieldPath` is string like `<<"field.0.anotherfield.5.errorfield">>` (very similar to XPath).
+`Errors` tuple element is a list of error tuples. Each error is `{ErrorCode, FieldPathBinary, FieldPath}` tuple; `ErrorCode` is one of predefined binary strings describing the error occured (this description can be overwritten); `FieldPathBinary` is string like `<<"field.0.anotherfield.5.errorfield">>` (very similar to XPath); `FieldPath` is a list like `[<<"field">>,<<"0">>,<<"anotherfield">>,<<"5">>,<<"errorfield">>]` (splitted XPath).
 
 `Result` is Jiffy-like term, containing only valid and mapped values; e.g. if you are not describing field `foo` in your root hash, this field will never pass to result term, even this field passes with decoded JSON to validator.
 
@@ -141,11 +141,10 @@ validator(fix, _, _) ->
 Todo tasks
 ----------
 
-1. Validator function is not called in case of undefined required hash field.
-2. Hash fields can be defined as multityped like lists, e.g. `{<<"hashfield">>, required, [{integer}, {string}]}`.
-3. We can define `soft_list` type, which will be opposite to `strong_list` type, e.g. `{soft_list, [{string}, {integer}]}` will mean "list of strings or integers", not "list of strings or list of integers".
-4. Sometimes it may be useful to return erroneous field value in error tuple: `{ErrorCode, FieldPath, ErroneousValue}`. **NB**: this can be aaplied only to elementary types, not composite ones.
-5. It may be useful to add a little function to get data from decoded JSON term with XPath-style:
+1. Hash fields can be defined as multityped like lists, e.g. `{<<"hashfield">>, required, [{integer}, {string}]}`.
+2. We can define `soft_list` type, which will be opposite to `strong_list` type, e.g. `{soft_list, [{string}, {integer}]}` will mean "list of strings or integers", not "list of strings or list of integers".
+3. Sometimes it may be useful to return erroneous field value in error tuple: `{ErrorCode, FieldPath, ErroneousValue}`. **NB**: this can be aaplied only to elementary types, not composite ones.
+4. It may be useful to add a little function to get data from decoded JSON term with XPath-style:
 
 ```erlang
 get(undefined, _Keys) ->
