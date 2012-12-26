@@ -20,7 +20,7 @@ Jiffy-V can handle the following types:
  - typed `list`
  - `enum` (a number of predefined values)
 
-The last three types are composite; this means, that this types can be root types of your message map. But something tells us that in most cases root type of your message map will me `hash`.
+The last three types are composite; this means, that this types can be root types of your message map. But something tells us that in most cases root type of your message map will be `hash`.
 
 Typing and maps
 ---------------
@@ -96,19 +96,19 @@ You can pass custom validation function to Jiffy-V to provide more flexible vali
 
 Jiffy-V calls this function in two cases: 
 
-First. Concrete field is validated successfully; function called as `Function(validate, [path, to, field], Value)`. Function must return one of the following tuples:
+First. Field is validated successfully; function called as `Function(validate, [path, to, field], Value)`. Function must return one of the following tuples:
 
  - `{ok, valid}`; in this case current field value will be passed to result term.
  - `{ok, NewValue}`; in this case `NewValue` will be passed to result term as a value of current field.
  - `{error, Code}`; in this case Jiffy-V will generate an error with `Code` as `ErrorCode`.
 
-Second. Concrete field is invalidated; function called as `Function(fix, [path, to, field], Value)`. Function must return one of the following tuples:
+Second. Field is invalidated; function called as `Function(fix, [path, to, field], Value)`. Function must return one of the following tuples:
 
  - `{ok, NewValue}`; in this case current field will be "fixed" and `NewValue` will be passed to result term.
  - `{error, invalid}`; in this case Jiffy-V will generate standard error.
  - `{error, NewCode}`; in this case Jiffy-V will generate an error with `NewCode` as `ErrorCode`.
 
-Here is a little example of validate function usage: what we want is to map enum values to concrete values:
+Here is a little example of validate function usage: what we want is to map enum values to logical values:
 
 ```erlang
 validator(validate, [<<"enum">>], <<"SEX_MALE">>) ->
@@ -141,7 +141,7 @@ validator(fix, _, _) ->
 Todo tasks
 ----------
 
-1. Validator function is not called in case of undefined required hash field; This makes validator function as a provider of default values unusable.
+1. Validator function is not called in case of undefined required hash field.
 2. Hash fields can be defined as multityped like lists, e.g. `{<<"hashfield">>, required, [{integer}, {string}]}`.
 3. We can define `soft_list` type, which will be opposite to `strong_list` type, e.g. `{soft_list, [{string}, {integer}]}` will mean "list of strings or integers", not "list of strings or list of integers".
 4. Sometimes it may be useful to return erroneous field value in error tuple: `{ErrorCode, FieldPath, ErroneousValue}`. **NB**: this can be aaplied only to elementary types, not composite ones.
