@@ -107,9 +107,14 @@ handle(Type, Data, Errors, _Validator, _Stack) ->
 
 iterate_hash({FName, Obligatoriness, Type}, {D0, {R0}, E0, V, S0}) ->
     case proplists:get_value(FName, D0) of
-        %% field is unset, we're trying to fix it
+        %% required field is unset, we're trying to fix it
         undefined when required == Obligatoriness ->
-            {D0, {R0}, [{?UNDEFINED_FIELD, path_by_stack([FName | S0])} | E0], V, S0};
+            case fix(V, undefined, ?UNDEFINED_FIELD, E0, [FName | S0]) of 
+                {ok, E1, R1} ->
+                    {D0, {[{FName, R1} | R0]}, E1, V, S0};
+                {error, E1, _R1} ->
+                    {D0, {R0}, E1, V, S0}
+            end;
         undefined ->
             {D0, {R0}, E0, V, S0};
         Value ->
@@ -142,7 +147,7 @@ val(Validator, Data, Errors, Stack) ->
         {ok, NewVal} ->
             {ok, Errors, NewVal};
         {error, Code} ->
-            {error, [{Code, path_by_stack(Stack)} | Errors], Data}
+            {error, [{Code, path_by_stack(Stack), Stack} | Errors], Data}
     end.
 
 fix(Validator, Data, Code, Errors, Stack) ->
@@ -150,7 +155,7 @@ fix(Validator, Data, Code, Errors, Stack) ->
         {ok, NewVal} ->
             {ok, Errors, NewVal};
         {error, invalid} ->
-            {error, [{Code, path_by_stack(Stack)} | Errors], Data};
+            {error, [{Code, path_by_stack(Stack), Stack} | Errors], Data};
         {error, NewCode} ->
-            {error, [{NewCode, path_by_stack(Stack)} | Errors], Data}
+            {error, [{NewCode, path_by_stack(Stack), Stack} | Errors], Data}
     end.
