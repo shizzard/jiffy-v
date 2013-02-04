@@ -51,7 +51,7 @@ handle({list, [Variant | Variants]}, Data0, Errors0, Validator, Stack0) when is_
         failure ->
             handle({list, Variants}, Data0, Errors0, Validator, Stack0);
         {_Index, Result1, Errors1, Validator, _Stack1} ->
-            val(Validator, Result1, Errors1, Stack0)
+            val(Validator, lists:reverse(Result1), Errors1, Stack0)
     end;
 handle({list, []}, Data0, Errors0, Validator, Stack0) when is_list(Data0) ->
     fix(Validator, Data0, ?INVALID_LIST, Errors0, Stack0);
@@ -104,7 +104,7 @@ iterate_hash({FName, Obligatoriness, Type}, {D0, {R0}, E0, V, S0}) ->
         undefined when required == Obligatoriness ->
             case fix(V, undefined, ?UNDEFINED_FIELD, E0, [FName | S0]) of
                 {ok, E1, R1} ->
-                    {D0, {[{FName, R1} | R0]}, E1, V, S0};
+                    {D0, {R0++[{FName, R1}]}, E1, V, S0};
                 {error, E1, _R1} ->
                     {D0, {R0}, E1, V, S0}
             end;
@@ -113,7 +113,7 @@ iterate_hash({FName, Obligatoriness, Type}, {D0, {R0}, E0, V, S0}) ->
         Value ->
             case handle(Type, Value, E0, V, [FName | S0]) of
                 {ok, E1, R1} ->
-                    {D0, {[{FName, R1} | R0]}, E1, V, S0};
+                    {D0, {R0++[{FName, R1}]}, E1, V, S0};
                 {error, E1, _R1} ->
                     {D0, {R0}, E1, V, S0}
             end
