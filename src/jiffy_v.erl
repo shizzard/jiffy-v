@@ -140,7 +140,7 @@ val(Validator, Data, Errors, Stack) ->
         {ok, NewVal} ->
             {ok, Errors, NewVal};
         {error, Code} ->
-            {error, [{Code, path_by_stack(Stack), Stack} | Errors], Data}
+            {error, [{Code, path_by_stack(Stack), lists:reverse(Stack)} | Errors], Data}
     end.
 
 fix(Validator, Data, Code, Errors, Stack) ->
@@ -148,7 +148,7 @@ fix(Validator, Data, Code, Errors, Stack) ->
         {ok, NewVal} ->
             {ok, Errors, NewVal};
         {error, invalid} ->
-            {error, [{Code, path_by_stack(Stack), Stack} | Errors], Data};
+            {error, [{Code, path_by_stack(Stack), lists:reverse(Stack)} | Errors], Data};
         {error, NewCode} ->
-            {error, [{NewCode, path_by_stack(Stack), Stack} | Errors], Data}
+            {error, [{NewCode, path_by_stack(Stack), lists:reverse(Stack)} | Errors], Data}
     end.
