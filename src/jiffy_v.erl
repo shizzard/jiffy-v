@@ -108,7 +108,7 @@ handle({null}, Data0, Errors0, Validator, Stack0) ->
     fix(Validator, Data0, ?INVALID_NULL, Errors0, Stack0);
 
 handle(Type, Data, Errors, _Validator, _Stack) ->
-    error_logger:error_msg("Map definition error: invalid type: ~p", [Type]),
+    erlang:error({invalid_type, Type}),
     {ok, Errors, Data}.
 
 -spec iterate_hash({FName :: atom(), Obligatorness :: required | optional, Type :: field_type()},
