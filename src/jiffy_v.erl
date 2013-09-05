@@ -12,6 +12,12 @@
 
 -export([validate/2, validate/3]).
 
+-type field_type() :: {hash, Fields :: list()}
+                    | {list, Variants :: list()}
+                    | {enum, Variants :: list()}
+                    | {atom()}.
+
+-spec validate(Map :: field_type(), Data :: any()) -> any().
 validate(Map, Data) ->
     Fun = fun
         (validate, _, _) ->
@@ -20,6 +26,7 @@ validate(Map, Data) ->
             {error, invalid}
     end,
     validate(Map, Data, Fun).
+-spec validate(Map :: field_type(), Data :: any(), Fun :: fun()) -> {any(), any()}.
 validate(Map, Data, Fun) when is_function(Fun, 3)  ->
     case handle(Map, Data, [], Fun, []) of
         {ok, Errors, Result} ->
@@ -28,6 +35,12 @@ validate(Map, Data, Fun) when is_function(Fun, 3)  ->
             {Errors, Result}
     end.
 
+-spec handle(Type :: field_type(),
+             Data0 :: list() | {Data0 :: list()},
+             Errors0 :: any(),
+             Validator :: fun((_, _, _) -> any()),
+             Stack0 :: list()
+            ) -> {ok, any(), any()} | {error, nonempty_maybe_improper_list(), any()}.
 handle({hash, Fields}, {Data0}, Errors0, Validator, Stack0) when is_list(Data0) ->
     {_Data1, Result, Errors1, Validator, _Stack1} = lists:foldl(
         fun iterate_hash/2, {Data0, {[]}, Errors0, Validator, Stack0}, Fields),
@@ -95,9 +108,16 @@ handle({null}, Data0, Errors0, Validator, Stack0) ->
     fix(Validator, Data0, ?INVALID_NULL, Errors0, Stack0);
 
 handle(Type, Data, Errors, _Validator, _Stack) ->
-    error_logger:error_msg("Map definition error: invalid type: ~p", [Type]),
+    erlang:error({invalid_type, Type}),
     {ok, Errors, Data}.
 
+-spec iterate_hash({FName :: atom(), Obligatorness :: required | optional, Type :: field_type()},
+                   {D0 :: any(),
+                    {R0 :: list()},
+                    E0 :: any(),
+                    V :: any(),
+                    S0 :: list()
+                   }) -> {any(), {list()}, any(), any(), any()}.
 iterate_hash({FName, Obligatoriness, Type}, {D0, {R0}, E0, V, S0}) ->
     case proplists:get_value(FName, D0) of
         %% required field is unset, we're trying to fix it
@@ -122,6 +142,7 @@ iterate_hash(Any, {D0, R0, E0, V, S0}) ->
     error_logger:error_msg("Map definition error: invalid type: ~p", [Any]),
     {D0, R0, E0, V, S0}.
 
+-spec path_by_stack(Stack :: list()) -> binary().
 path_by_stack(Stack) ->
     lists:foldl(fun
         (Elem, <<>>) ->
@@ -130,9 +151,15 @@ path_by_stack(Stack) ->
             <<Acc/binary, <<".">>/binary, Elem/binary>>
     end, <<>>, lists:reverse(Stack)).
 
+-spec i_to_b(Int :: integer()) -> binary().
 i_to_b(Int) when is_integer(Int) ->
     list_to_binary(integer_to_list(Int)).
 
+-spec val(Validator :: fun((_, _, _) -> any()),
+          Data :: any(),
+          Errors :: any(),
+          Stack :: list()
+         ) -> {ok, any(), any()} | {error, nonempty_maybe_improper_list(), any()}.
 val(Validator, Data, Errors, Stack) ->
     case Validator(validate, lists:reverse(Stack), Data) of
         {ok, valid} ->
@@ -143,6 +170,12 @@ val(Validator, Data, Errors, Stack) ->
             {error, [{Code, path_by_stack(Stack), lists:reverse(Stack)} | Errors], Data}
     end.
 
+-spec fix(Validator :: fun((_, _, _) -> any()),
+          Data :: any(),
+          Code :: binary(),
+          Errors :: any(),
+          Stack :: list()
+         ) -> {ok, any(), any()} | {error, nonempty_maybe_improper_list(), any()}.
 fix(Validator, Data, Code, Errors, Stack) ->
     case Validator(fix, lists:reverse(Stack), Data) of
         {ok, NewVal} ->
