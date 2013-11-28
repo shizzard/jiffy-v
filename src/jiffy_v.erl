@@ -9,6 +9,7 @@
 -define(INVALID_BOOLEAN,    <<"INVALID_BOOLEAN">>).
 -define(INVALID_NULL,       <<"INVALID_NULL">>).
 -define(INVALID_LIST,       <<"INVALID_LIST">>).
+-define(INVALID_VARIANT,    <<"INVALID_VARIANT">>).
 
 -export([validate/2, validate/3]).
 
@@ -78,6 +79,15 @@ handle({enum, Variants}, Data0, Errors0, Validator, Stack0) ->
         false ->
             fix(Validator, Data0, ?INVALID_ENUM, Errors0, Stack0)
     end;
+
+handle({variant, [Variant | Variants]}, Data0, Errors0, Validator, Stack0) ->
+    case handle(Variant, Data0, Errors0, Validator, Stack0) of
+        {error, _E1, _R1} ->
+            handle({variant, Variants}, Data0, Errors0, Validator, Stack0);
+        Res -> Res
+    end;
+handle({variant, _Variants}, Data0, Errors0, Validator, Stack0) ->
+    fix(Validator, Data0, ?INVALID_VARIANT, Errors0, Stack0);
 
 handle({string}, Data0, Errors0, Validator, Stack0) when is_binary(Data0) ->
     val(Validator, Data0, Errors0, Stack0);

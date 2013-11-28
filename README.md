@@ -19,8 +19,9 @@ Jiffy-V can handle the following types:
  - `hash` (or associative array, key-value array)
  - typed `list`
  - `enum` (a number of predefined values)
+ - `variant` (any listed type)
 
-The last three types are composite; this means, that this types can be root types of your message map. But something tells us that in most cases root type of your message map will be `hash`.
+The last four types are composite; this means, that this types can be root types of your message map. But something tells us that in most cases root type of your message map will be `hash`.
 
 Typing and maps
 ---------------
@@ -32,6 +33,8 @@ All of elementary types are desribed as tupled atom: `{integer}`, `{boolean}`, e
 Typed list is described as a tuple `{list, [type1, type2, ...]}`. **NB**: list of types means, that all element of list must be typed with one type, e.g. `{list, [{string}, {integer}]}` means "list of strings or list of integers", not "list of strings or integers".
 
 Enum is described as a tuple `{enum, [value1, value2, ...]}`. 
+
+Variant is described as a tuple `{variant, [type1, type2, ...]}`. 
 
 Hash is described as a tuple `{hash, [field1, field2, ...]}`. Each of the hash fields is described as a tuple `{field_name, required|optional, type}`.
 
@@ -45,6 +48,7 @@ Following map shows most of the mapping variants:
     ]}},
     {<<"list">>, optional, {list, [{float}, {boolean}]}},
     {<<"enum">>, required, {enum, [<<"CONSTANT1">>, <<"CONSTANT2">>]}},
+    {<<"variant">>, required, {variant, [{integer}, {string}]}},
     {<<"boolean">>, required, {bool}},
     {<<"integer">>, required, {integer}},
     {<<"float">>, reuqired, {float}},
@@ -141,10 +145,9 @@ validator(fix, _, _) ->
 Todo tasks
 ----------
 
-1. Hash fields can be defined as multityped like lists, e.g. `{<<"hashfield">>, required, [{integer}, {string}]}`.
-2. We can define `soft_list` type, which will be opposite to `strong_list` type, e.g. `{soft_list, [{string}, {integer}]}` will mean "list of strings or integers", not "list of strings or list of integers".
-3. Sometimes it may be useful to return erroneous field value in error tuple: `{ErrorCode, FieldPath, ErroneousValue}`. **NB**: this can be aaplied only to elementary types, not composite ones.
-4. It may be useful to add a little function to get data from decoded JSON term with XPath-style:
+1. We can define `soft_list` type, which will be opposite to `strong_list` type, e.g. `{soft_list, [{string}, {integer}]}` will mean "list of strings or integers", not "list of strings or list of integers".
+2. Sometimes it may be useful to return erroneous field value in error tuple: `{ErrorCode, FieldPath, ErroneousValue}`. **NB**: this can be aaplied only to elementary types, not composite ones.
+3. It may be useful to add a little function to get data from decoded JSON term with XPath-style:
 
 ```erlang
 get(undefined, _Keys) ->
