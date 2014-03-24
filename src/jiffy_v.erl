@@ -55,6 +55,8 @@ handle({list, [Variant | Variants]}, Data0, Errors0, Validator, Stack0) when is_
             case handle(Variant, Elem, E0, V, [i_to_b(I0) | S0]) of
                 {ok, E1, R1} ->
                     {I0 + 1, [R1 | Acc], E1, V, S0};
+                {custom_error, E1, _R1} ->
+                    {I0 + 1, Acc, E1, V, S0};
                 {error, _E1, _R1} ->
                     failure
             end;
@@ -136,6 +138,8 @@ iterate_hash({FName, Obligatoriness, Type}, {D0, {R0}, E0, V, S0}) ->
                 {ok, E1, R1} ->
                     {D0, {R0++[{FName, R1}]}, E1, V, S0};
                 {error, E1, _R1} ->
+                    {D0, {R0}, E1, V, S0};
+                {custom_error, E1, _R1} ->
                     {D0, {R0}, E1, V, S0}
             end;
         undefined ->
@@ -145,6 +149,8 @@ iterate_hash({FName, Obligatoriness, Type}, {D0, {R0}, E0, V, S0}) ->
                 {ok, E1, R1} ->
                     {D0, {R0++[{FName, R1}]}, E1, V, S0};
                 {error, E1, _R1} ->
+                    {D0, {R0}, E1, V, S0};
+                {custom_error, E1, _R1} ->
                     {D0, {R0}, E1, V, S0}
             end
     end;
@@ -177,7 +183,7 @@ val(Validator, Data, Errors, Stack) ->
         {ok, NewVal} ->
             {ok, Errors, NewVal};
         {error, Code} ->
-            {error, [{Code, path_by_stack(Stack), lists:reverse(Stack)} | Errors], Data}
+            {custom_error, [{Code, path_by_stack(Stack), lists:reverse(Stack)} | Errors], Data}
     end.
 
 -spec fix(Validator :: fun((_, _, _) -> any()),
@@ -193,5 +199,5 @@ fix(Validator, Data, Code, Errors, Stack) ->
         {error, invalid} ->
             {error, [{Code, path_by_stack(Stack), lists:reverse(Stack)} | Errors], Data};
         {error, NewCode} ->
-            {error, [{NewCode, path_by_stack(Stack), lists:reverse(Stack)} | Errors], Data}
+            {custom_error, [{NewCode, path_by_stack(Stack), lists:reverse(Stack)} | Errors], Data}
     end.
