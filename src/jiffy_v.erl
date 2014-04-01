@@ -28,7 +28,7 @@
 -type jv_type_boolean() :: {boolean}.
 -type jv_type_null() :: {null}.
 -type jv_type_scalar() :: jv_type_integer() | jv_type_float() | jv_type_string() | jv_type_boolean() | jv_type_null().
--type jv_type_hashfield() :: {FieldName :: binary(), Obligatoriness :: required | optional, Type :: jv_type}.
+-type jv_type_hashfield() :: {FieldName :: binary(), Obligatoriness :: required | optional, Type :: jv_type()}.
 -type jv_type_hash() :: {hash, Fields :: list(Field :: jv_type_hashfield())}.
 -type jv_type_list() :: {list, Variants :: list(Variant :: jv_type())}.
 -type jv_type_enum() :: {enum, Variants :: list(Variant :: term())}.
@@ -74,6 +74,8 @@ validate(Map, Data) ->
 validate(Map, Data, Fun) when is_function(Fun, 3)  ->
     case handle(Map, Data, [], Fun, []) of
         {ok, Errors, Result} ->
+            {Errors, Result};
+        {custom_error, Errors, Result} ->
             {Errors, Result};
         {error, Errors, Result} ->
             {Errors, Result}
@@ -137,7 +139,7 @@ handle({variant, [Variant | Variants]}, Data0, Errors0, Validator, Stack0) ->
         Res -> Res
     end;
 
-handle({variant, _Variants}, Data0, Errors0, Validator, Stack0) ->
+handle({variant, []}, Data0, Errors0, Validator, Stack0) ->
     fix(Validator, Data0, ?INVALID_VARIANT, Errors0, Stack0);
 
 handle({string}, Data0, Errors0, Validator, Stack0) when is_binary(Data0) ->
@@ -189,9 +191,9 @@ iterate_hash({FName, Obligatoriness, Type}, {D0, {R0}, E0, V, S0}) ->
             case fix(V, undefined, ?UNDEFINED_FIELD, E0, [FName | S0]) of
                 {ok, E1, R1} ->
                     {D0, {R0++[{FName, R1}]}, E1, V, S0};
-                {error, E1, _R1} ->
-                    {D0, {R0}, E1, V, S0};
                 {custom_error, E1, _R1} ->
+                    {D0, {R0}, E1, V, S0};
+                {error, E1, _R1} ->
                     {D0, {R0}, E1, V, S0}
             end;
         undefined ->
@@ -200,9 +202,9 @@ iterate_hash({FName, Obligatoriness, Type}, {D0, {R0}, E0, V, S0}) ->
             case handle(Type, Value, E0, V, [FName | S0]) of
                 {ok, E1, R1} ->
                     {D0, {R0++[{FName, R1}]}, E1, V, S0};
-                {error, E1, _R1} ->
-                    {D0, {R0}, E1, V, S0};
                 {custom_error, E1, _R1} ->
+                    {D0, {R0}, E1, V, S0};
+                {error, E1, _R1} ->
                     {D0, {R0}, E1, V, S0}
             end
     end;
