@@ -16,7 +16,9 @@
     jv_type_integer/0, jv_type_float/0, jv_type_string/0, jv_type_boolean/0, jv_type_null/0, jv_type_scalar/0,
     jv_type_hash/0, jv_type_list/0, jv_type_enum/0, jv_type_composite/0, jv_type/0
 ]).
--export_type([jv_data/0]).
+-export_type([
+    jv_data_object/0, jv_data_list/0, jv_data_scalar/0, jv_data/0
+]).
 -export_type([
     jv_ret_code/0, jv_ret_stack/0, jv_ret_error/0, jv_ret_errorlist/0, jv_ret_result/0, jv_ret/0
 ]).
@@ -36,7 +38,10 @@
 -type jv_type_composite() :: jv_type_hash() | jv_type_list() | jv_type_enum() | jv_type_variant().
 -type jv_type() :: jv_type_scalar() | jv_type_composite().
 
--type jv_data() :: term().
+-type jv_data_object() :: {list({Key :: binary(), Value :: jv_data()})}.
+-type jv_data_list() :: list(Item :: jv_data()).
+-type jv_data_scalar() :: binary() | integer() | float() | boolean().
+-type jv_data() :: jv_data_object() | jv_data_list() | jv_data_scalar().
 
 -type jv_ret_code() :: term().
 -type jv_ret_stack() :: list(binary()).
@@ -248,7 +253,7 @@ val(Validator, Data, Errors, Stack) ->
 
 
 
--spec fix(Validator :: jv_fun_val(), Data :: jv_data(), Code :: jv_ret_code(), Errors :: jv_ret_errorlist(), Stack :: jv_ret_stack()) ->
+-spec fix(Validator :: jv_fun_val(), Data :: jv_data() | undefined, Code :: jv_ret_code(), Errors :: jv_ret_errorlist(), Stack :: jv_ret_stack()) ->
     {ok, Errors :: jv_ret_errorlist(), Result :: jv_ret_result()} |
     {error, Errors :: jv_ret_errorlist(), Result :: jv_ret_result()} |
     {custom_error, Errors :: jv_ret_errorlist(), Result :: jv_ret_result()}.
