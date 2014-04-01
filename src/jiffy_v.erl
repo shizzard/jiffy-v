@@ -28,7 +28,7 @@
 -type jv_type_boolean() :: {boolean}.
 -type jv_type_null() :: {null}.
 -type jv_type_scalar() :: jv_type_integer() | jv_type_float() | jv_type_string() | jv_type_boolean() | jv_type_null().
--type jv_type_hashfield() :: {FieldName :: binary(), Obligatoriness :: required | optional, Type :: jv_type}.
+-type jv_type_hashfield() :: {FieldName :: binary(), Obligatoriness :: required | optional, Type :: jv_type()}.
 -type jv_type_hash() :: {hash, Fields :: list(Field :: jv_type_hashfield())}.
 -type jv_type_list() :: {list, Variants :: list(Variant :: jv_type())}.
 -type jv_type_enum() :: {enum, Variants :: list(Variant :: term())}.
