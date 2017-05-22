@@ -49,7 +49,7 @@ Following map shows most of the mapping variants:
     {<<"list">>, optional, {list, [{float}, {boolean}]}},
     {<<"enum">>, required, {enum, [<<"CONSTANT1">>, <<"CONSTANT2">>]}},
     {<<"variant">>, required, {variant, [{integer}, {string}]}},
-    {<<"boolean">>, required, {bool}},
+    {<<"boolean">>, required, {boolean}},
     {<<"integer">>, required, {integer}},
     {<<"float">>, reuqired, {float}},
     {<<"string">>, optional, {string}},
