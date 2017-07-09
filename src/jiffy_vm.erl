@@ -14,7 +14,7 @@
 -export([validate/2, validate/3]).
 -export([
     integer/0, float/0, string/0, boolean/0, null/0,
-    hashfield/3, hash/1, list/1, enum/1, variant/1
+    hashfield/3, hash/1, list/1, enum/1, variant/1, any/0
 ]).
 -export_type([
     jv_type_integer/0, jv_type_float/0, jv_type_string/0, jv_type_boolean/0, jv_type_null/0, jv_type_scalar/0,
@@ -40,7 +40,8 @@
 -type jv_type_enum() :: #{type := enum, variants := list(Variant :: term())}.
 -type jv_type_variant() :: #{type := variant, variants := list(Variant :: jv_type())}.
 -type jv_type_composite() :: jv_type_hash() | jv_type_list() | jv_type_enum() | jv_type_variant().
--type jv_type() :: jv_type_scalar() | jv_type_composite().
+-type jv_type_any() :: #{type := any}.
+-type jv_type() :: jv_type_scalar() | jv_type_composite() | jv_type_any().
 
 -type jv_data_object() :: #{Key :: binary() := Value :: jv_data()}.
 -type jv_data_list() :: list(Item :: jv_data()).
@@ -163,6 +164,13 @@ enum(Variants) ->
     Ret :: jv_type_variant().
 variant(Variants) ->
     #{type => variant, variants => Variants}.
+
+
+
+-spec any() ->
+    Ret :: jv_type_any().
+any() ->
+    #{type => any}.
 
 
 
