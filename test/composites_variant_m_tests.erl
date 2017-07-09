@@ -1,4 +1,4 @@
--module(composites_variant_tests).
+-module(composites_variant_m_tests).
 
 -include_lib("eunit/include/eunit.hrl").
 
@@ -9,30 +9,30 @@
 
 
 can_get_invalid_variant_test() ->
-    Map = jiffy_v:variant([
-        jiffy_v:integer(), jiffy_v:boolean()
+    Map = jiffy_vm:variant([
+        jiffy_vm:integer(), jiffy_vm:boolean()
     ]),
     Data = [1,2,3,4,5],
-    {Errors, _Result} = jiffy_v:validate(Map, Data),
+    {Errors, _Result} = jiffy_vm:validate(Map, Data),
     ?assertEqual(1, length(Errors)),
     ?assertMatch([{<<"INVALID_VARIANT">>, <<"">>, []}], Errors).
 
 
 
 can_get_valid_variant_test() ->
-    Map = jiffy_v:variant([
-        jiffy_v:integer(), jiffy_v:boolean()
+    Map = jiffy_vm:variant([
+        jiffy_vm:integer(), jiffy_vm:boolean()
     ]),
     Data = true,
-    {Errors, Result} = jiffy_v:validate(Map, Data),
+    {Errors, Result} = jiffy_vm:validate(Map, Data),
     ?assertEqual(0, length(Errors)),
     ?assertMatch(Data, Result).
 
 
 
 can_get_custom_variant_error_code_test() ->
-    Map = jiffy_v:variant([
-        jiffy_v:integer(), jiffy_v:boolean()
+    Map = jiffy_vm:variant([
+        jiffy_vm:integer(), jiffy_vm:boolean()
     ]),
     Data = 3,
     Fun = fun
@@ -43,15 +43,15 @@ can_get_custom_variant_error_code_test() ->
         (fix, _, _) ->
             {error, invalid}
     end,
-    {Errors, _Result} = jiffy_v:validate(Map, Data, Fun),
+    {Errors, _Result} = jiffy_vm:validate(Map, Data, Fun),
     ?assertEqual(1, length(Errors)),
     ?assertMatch([{<<"CUSTOM_ERROR_CODE">>, <<>>, []}], Errors).
 
 
 
 can_fix_invalid_variant_test() ->
-    Map = jiffy_v:variant([
-        jiffy_v:integer(), jiffy_v:boolean()
+    Map = jiffy_vm:variant([
+        jiffy_vm:integer(), jiffy_vm:boolean()
     ]),
     Data = 3.14,
     Fun = fun
@@ -62,6 +62,6 @@ can_fix_invalid_variant_test() ->
         (fix, _, _) ->
             {error, invalid}
     end,
-    {Errors, Result} = jiffy_v:validate(Map, Data, Fun),
+    {Errors, Result} = jiffy_vm:validate(Map, Data, Fun),
     ?assertEqual(0, length(Errors)),
     ?assertMatch(false, Result).
