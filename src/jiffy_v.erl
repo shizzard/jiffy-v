@@ -12,6 +12,10 @@
 -define(INVALID_VARIANT,    <<"INVALID_VARIANT">>).
 
 -export([validate/2, validate/3]).
+-export([
+    integer/0, float/0, string/0, boolean/0, null/0,
+    hashfield/3, hash/1, list/1, enum/1, variant/1
+]).
 -export_type([
     jv_type_integer/0, jv_type_float/0, jv_type_string/0, jv_type_boolean/0, jv_type_null/0, jv_type_scalar/0,
     jv_type_hash/0, jv_type_list/0, jv_type_enum/0, jv_type_composite/0, jv_type/0
@@ -85,6 +89,80 @@ validate(Map, Data, Fun) when is_function(Fun, 3)  ->
         {error, Errors, Result} ->
             {Errors, Result}
     end.
+
+
+
+-spec integer() ->
+    Ret :: jv_type_integer().
+integer() ->
+    {integer}.
+
+
+
+-spec float() ->
+    Ret :: jv_type_float().
+float() ->
+    {float}.
+
+
+
+-spec string() ->
+    Ret :: jv_type_string().
+string() ->
+    {string}.
+
+
+
+-spec boolean() ->
+    Ret :: jv_type_boolean().
+boolean() ->
+    {boolean}.
+
+
+
+-spec null() ->
+    Ret :: jv_type_null().
+null() ->
+    {null}.
+
+
+
+-spec hashfield(
+    FieldName :: binary(),
+    IsRequired :: required | optional,
+    Type :: jv_type()
+) ->
+    Ret :: jv_type_hashfield().
+hashfield(FieldName, IsRequired, Type) ->
+    {FieldName, IsRequired, Type}.
+
+
+
+-spec hash(Fields :: list(Field :: jv_type_hashfield())) ->
+    Ret :: jv_type_hash().
+hash(Fields) ->
+    {hash, Fields}.
+
+
+
+-spec list(Variants :: list(Variant :: jv_type())) ->
+    Ret :: jv_type_list().
+list(Variants) ->
+    {list, Variants}.
+
+
+
+-spec enum(Variants :: list(Variant :: term())) ->
+    Ret :: jv_type_enum().
+enum(Variants) ->
+    {enum, Variants}.
+
+
+
+-spec variant(Variants :: list(jv_type())) ->
+    Ret :: jv_type_variant().
+variant(Variants) ->
+    {variant, Variants}.
 
 
 

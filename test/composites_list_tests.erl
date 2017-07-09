@@ -9,7 +9,9 @@
 
 
 can_get_invalid_list_test() ->
-    Map = {list, [{integer}]},
+    Map = jiffy_v:list([
+        jiffy_v:integer()
+    ]),
     Data = {not_a_list},
     {Errors, _Result} = jiffy_v:validate(Map, Data),
     ?assertMatch([_], Errors),
@@ -19,7 +21,9 @@ can_get_invalid_list_test() ->
 
 
 can_get_typed_list_test() ->
-    Map = {list, [{integer}]},
+    Map = jiffy_v:list([
+        jiffy_v:integer()
+    ]),
     Data = [1,2,3,4,5],
     {Errors, Result} = jiffy_v:validate(Map, Data),
     ?assertEqual(0, length(Errors)),
@@ -28,7 +32,9 @@ can_get_typed_list_test() ->
 
 
 can_get_multityped_list_test() ->
-    Map = {list, [{integer}, {float}]},
+    Map = jiffy_v:list([
+        jiffy_v:integer(), jiffy_v:float()
+    ]),
     Data = [1.0,2.0,3.0,4.0,5.0],
     {Errors, Result} = jiffy_v:validate(Map, Data),
     ?assertEqual(0, length(Errors)),
@@ -37,7 +43,9 @@ can_get_multityped_list_test() ->
 
 
 can_get_invalid_list_on_types_mismatch_test() ->
-    Map = {list, [{integer}, {boolean}]},
+    Map = jiffy_v:list([
+        jiffy_v:integer(), jiffy_v:boolean()
+    ]),
     Data = [1.0,2.0,3,4,5],
     {Errors, Result} = jiffy_v:validate(Map, Data),
     io:format("~p", [Result]),
@@ -47,7 +55,9 @@ can_get_invalid_list_on_types_mismatch_test() ->
 
 
 can_get_result_on_empty_list_test() ->
-    Map = {list, [{integer}, {float}]},
+    Map = jiffy_v:list([
+        jiffy_v:integer(), jiffy_v:float()
+    ]),
     Data = [],
     {Errors, Result} = jiffy_v:validate(Map, Data),
     ?assertEqual(0, length(Errors)),
@@ -56,7 +66,9 @@ can_get_result_on_empty_list_test() ->
 
 
 can_get_custom_list_error_code_test() ->
-    Map = {list, [{integer}]},
+    Map = jiffy_v:list([
+        jiffy_v:integer()
+    ]),
     Data = [1,2,3,4,5],
     Fun = fun
         (validate, [_], Value) when Value > 4 ->
@@ -73,7 +85,9 @@ can_get_custom_list_error_code_test() ->
 
 
 can_fix_invalid_list_test() ->
-    Map = {list, [{integer}]},
+    Map = jiffy_v:list([
+        jiffy_v:integer()
+    ]),
     Data = [true,2,3,false,5],
     Fun = fun
         (fix, [_], true) ->

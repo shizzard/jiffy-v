@@ -9,9 +9,9 @@
 
 
 can_get_invalid_hash_error_test() ->
-    Map = {hash, [
-        {<<"foo">>, required, {integer}}
-    ]},
+    Map = jiffy_v:hash([
+        jiffy_v:hashfield(<<"foo">>, required, jiffy_v:integer())
+    ]),
     Data = not_hash,
     {Errors, _Result} = jiffy_v:validate(Map, Data),
     ?assertEqual(1, length(Errors)),
@@ -20,9 +20,9 @@ can_get_invalid_hash_error_test() ->
 
 
 can_get_mapped_hash_value_test() ->
-    Map = {hash, [
-        {<<"foo">>, required, {integer}}
-    ]},
+    Map = jiffy_v:hash([
+        jiffy_v:hashfield(<<"foo">>, required, jiffy_v:integer())
+    ]),
     Data = {[
         {<<"foo">>, 1}
     ]},
@@ -33,9 +33,9 @@ can_get_mapped_hash_value_test() ->
 
 
 cannot_get_unmapped_hash_field_test() ->
-    Map = {hash, [
-        {<<"foo">>, required, {integer}}
-    ]},
+    Map = jiffy_v:hash([
+        jiffy_v:hashfield(<<"foo">>, required, jiffy_v:integer())
+    ]),
     Data = {[
         {<<"foo">>, 1},
         {<<"bar">>, 2}
@@ -47,10 +47,10 @@ cannot_get_unmapped_hash_field_test() ->
 
 
 can_get_result_with_undefined_hash_optional_field_test() ->
-    Map = {hash, [
-        {<<"foo">>, required, {integer}},
-        {<<"bar">>, optional, {integer}}
-    ]},
+    Map = jiffy_v:hash([
+        jiffy_v:hashfield(<<"foo">>, required, jiffy_v:integer()),
+        jiffy_v:hashfield(<<"bar">>, optional, jiffy_v:integer())
+    ]),
     Data = {[
         {<<"foo">>, 1}
     ]},
@@ -62,9 +62,9 @@ can_get_result_with_undefined_hash_optional_field_test() ->
 
 
 can_get_undefined_field_error_test() ->
-    Map = {hash, [
-        {<<"foo">>, required, {integer}}
-    ]},
+    Map = jiffy_v:hash([
+        jiffy_v:hashfield(<<"foo">>, required, jiffy_v:integer())
+    ]),
     Data = {[
         {<<"bar">>, 1}
     ]},
@@ -76,9 +76,9 @@ can_get_undefined_field_error_test() ->
 
 
 can_pass_custom_hash_error_code_test() ->
-    Map = {hash, [
-        {<<"foo">>, required, {integer}}
-    ]},
+    Map = jiffy_v:hash([
+        jiffy_v:hashfield(<<"foo">>, required, jiffy_v:integer())
+    ]),
     Data = {[
         {<<"foo">>, -1}
     ]},
@@ -98,9 +98,9 @@ can_pass_custom_hash_error_code_test() ->
 
 
 can_fix_undefined_hash_field_test() ->
-    Map = {hash, [
-        {<<"foo">>, required, {integer}}
-    ]},
+    Map = jiffy_v:hash([
+        jiffy_v:hashfield(<<"foo">>, required, jiffy_v:integer())
+    ]),
     Data = {[
         {<<"baz">>, 3.14}
     ]},
@@ -119,9 +119,9 @@ can_fix_undefined_hash_field_test() ->
 
 
 can_fix_invalid_hash_field_test() ->
-    Map = {hash, [
-        {<<"foo">>, required, {integer}}
-    ]},
+    Map = jiffy_v:hash([
+        jiffy_v:hashfield(<<"foo">>, required, jiffy_v:integer())
+    ]),
     Data = {[
         {<<"foo">>, false}
     ]},

@@ -9,7 +9,7 @@
 
 
 can_get_invalid_null_test() ->
-    Map = {null},
+    Map = jiffy_v:null(),
     Data = <<"not_null">>,
     {Errors, _Result} = jiffy_v:validate(Map, Data),
     ?assertEqual(1, length(Errors)),
@@ -18,7 +18,7 @@ can_get_invalid_null_test() ->
 
 
 can_get_valid_null_test() ->
-    Map = {null},
+    Map = jiffy_v:null(),
     Data = null,
     {Errors, Result} = jiffy_v:validate(Map, Data),
     ?assertEqual(0, length(Errors)),
@@ -27,7 +27,7 @@ can_get_valid_null_test() ->
 
 
 can_get_custom_null_error_code_test() ->
-    Map = {null},
+    Map = jiffy_v:null(),
     Data = null,
     Fun = fun
         (validate, [], null) ->
@@ -45,7 +45,7 @@ can_get_custom_null_error_code_test() ->
 
 
 can_fix_invalid_null_error_code_test() ->
-    Map = {null},
+    Map = jiffy_v:null(),
     Data = 0,
     Fun = fun
         (fix, [], 0) ->

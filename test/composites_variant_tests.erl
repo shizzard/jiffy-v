@@ -9,7 +9,7 @@
 
 
 can_get_invalid_variant_test() ->
-    Map = {variant, [{integer}, {boolean}]},
+    Map = jiffy_v:variant([{integer}, {boolean}]),
     Data = [1,2,3,4,5],
     {Errors, _Result} = jiffy_v:validate(Map, Data),
     ?assertEqual(1, length(Errors)),
@@ -18,7 +18,7 @@ can_get_invalid_variant_test() ->
 
 
 can_get_valid_variant_test() ->
-    Map = {variant, [{integer}, {boolean}]},
+    Map = jiffy_v:variant([{integer}, {boolean}]),
     Data = true,
     {Errors, Result} = jiffy_v:validate(Map, Data),
     ?assertEqual(0, length(Errors)),
@@ -27,7 +27,7 @@ can_get_valid_variant_test() ->
 
 
 can_get_custom_variant_error_code_test() ->
-    Map = {variant, [{integer}, {boolean}]},
+    Map = jiffy_v:variant([{integer}, {boolean}]),
     Data = 3,
     Fun = fun
         (validate, [], Value) when Value == 3 ->
@@ -44,7 +44,7 @@ can_get_custom_variant_error_code_test() ->
 
 
 can_fix_invalid_variant_test() ->
-    Map = {variant, [{integer}, {boolean}]},
+    Map = jiffy_v:variant([{integer}, {boolean}]),
     Data = 3.14,
     Fun = fun
         (fix, [], _Value) ->

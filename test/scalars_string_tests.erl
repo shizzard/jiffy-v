@@ -9,7 +9,7 @@
 
 
 can_get_invalid_string_test() ->
-    Map = {string},
+    Map = jiffy_v:string(),
     Data = 45,
     {Errors, _Result} = jiffy_v:validate(Map, Data),
     ?assertEqual(1, length(Errors)),
@@ -18,7 +18,7 @@ can_get_invalid_string_test() ->
 
 
 can_get_valid_string_test() ->
-    Map = {string},
+    Map = jiffy_v:string(),
     Data = <<"string">>,
     {Errors, Result} = jiffy_v:validate(Map, Data),
     ?assertEqual(0, length(Errors)),
@@ -27,7 +27,7 @@ can_get_valid_string_test() ->
 
 
 can_get_custom_string_error_code_test() ->
-    Map = {string},
+    Map = jiffy_v:string(),
     Data = <<"string">>,
     Fun = fun
         (validate, [], <<"string">>) ->
@@ -44,7 +44,7 @@ can_get_custom_string_error_code_test() ->
 
 
 can_fix_invalid_string_test() ->
-    Map = {string},
+    Map = jiffy_v:string(),
     Data = "string",
     Fun = fun
         (fix, [], Value) when is_list(Value) ->

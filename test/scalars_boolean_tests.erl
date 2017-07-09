@@ -9,7 +9,7 @@
 
 
 can_get_invalid_boolean_test() ->
-    Map = {boolean},
+    Map = jiffy_v:boolean(),
     Data = <<"not_boolean">>,
     {Errors, _Result} = jiffy_v:validate(Map, Data),
     ?assertEqual(1, length(Errors)),
@@ -18,7 +18,7 @@ can_get_invalid_boolean_test() ->
 
 
 can_get_valid_boolean_test() ->
-    Map = {boolean},
+    Map = jiffy_v:boolean(),
     Data = false,
     {Errors, Result} = jiffy_v:validate(Map, Data),
     ?assertEqual(0, length(Errors)),
@@ -27,7 +27,7 @@ can_get_valid_boolean_test() ->
 
 
 can_get_custom_boolean_error_code_test() ->
-    Map = {boolean},
+    Map = jiffy_v:boolean(),
     Data = false,
     Fun = fun
         (validate, [], false) ->
@@ -44,7 +44,7 @@ can_get_custom_boolean_error_code_test() ->
 
 
 can_fix_invalid_boolean_error_code_test() ->
-    Map = {boolean},
+    Map = jiffy_v:boolean(),
     Data = 1,
     Fun = fun
         (fix, [], 1) ->

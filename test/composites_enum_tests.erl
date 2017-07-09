@@ -9,7 +9,7 @@
 
 
 can_get_invalid_enum_test() ->
-    Map = {enum, [1,2,3]},
+    Map = jiffy_v:enum([1,2,3]),
     Data = 7,
     {Errors, _Result} = jiffy_v:validate(Map, Data),
     ?assertEqual(1, length(Errors)),
@@ -18,7 +18,7 @@ can_get_invalid_enum_test() ->
 
 
 can_get_valid_enum_test() ->
-    Map = {enum, [1,2,3]},
+    Map = jiffy_v:enum([1,2,3]),
     Data = 3,
     {Errors, Result} = jiffy_v:validate(Map, Data),
     ?assertEqual(0, length(Errors)),
@@ -27,7 +27,7 @@ can_get_valid_enum_test() ->
 
 
 can_get_custom_enum_error_code_test() ->
-    Map = {enum, [1,2,3]},
+    Map = jiffy_v:enum([1,2,3]),
     Data = 3,
     Fun = fun
         (validate, [], Value) when Value < 4 ->
@@ -44,7 +44,7 @@ can_get_custom_enum_error_code_test() ->
 
 
 can_fix_invalid_enum_test() ->
-    Map = {enum, [<<"male">>, <<"female">>]},
+    Map = jiffy_v:enum([<<"male">>, <<"female">>]),
     Data = 1,
     Fun = fun
         (fix, [], _Value) ->

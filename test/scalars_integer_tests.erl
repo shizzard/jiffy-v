@@ -9,7 +9,7 @@
 
 
 can_get_invalid_integer_test() ->
-    Map = {integer},
+    Map = jiffy_v:integer(),
     Data = true,
     {Errors, _Result} = jiffy_v:validate(Map, Data),
     ?assertEqual(1, length(Errors)),
@@ -18,7 +18,7 @@ can_get_invalid_integer_test() ->
 
 
 can_get_valid_integer_test() ->
-    Map = {integer},
+    Map = jiffy_v:integer(),
     Data = 10,
     {Errors, Result} = jiffy_v:validate(Map, Data),
     ?assertEqual(0, length(Errors)),
@@ -27,7 +27,7 @@ can_get_valid_integer_test() ->
 
 
 can_get_custom_integer_error_code_test() ->
-    Map = {integer},
+    Map = jiffy_v:integer(),
     Data = 3,
     Fun = fun
         (validate, [], 3) ->
@@ -44,7 +44,7 @@ can_get_custom_integer_error_code_test() ->
 
 
 can_fix_invalid_integer_test() ->
-    Map = {integer},
+    Map = jiffy_v:integer(),
     Data = false,
     Fun = fun
         (fix, [], _Value) ->
