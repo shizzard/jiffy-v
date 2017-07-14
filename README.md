@@ -126,41 +126,13 @@ Second. Field is invalidated; function called as `Function(fix, [path, to, field
  - `{error, invalid}`; in this case Jiffy-V will generate standard error.
  - `{error, NewCode}`; in this case Jiffy-V will generate an error with `NewCode` as `ErrorCode`.
 
-Here is a little example of validate function usage: what we want is to map enum values to logical values:
-
-```erlang
-validator(validate, [<<"enum">>], <<"SEX_MALE">>) ->
-    {ok, 0};
-validator(validate, [<<"enum">>], <<"SEX_FEMALE">>) ->
-    {ok, 1};
-validator(validate, [<<"enum">>], <<"SEX_ANY">>) ->
-    {ok, 2};
-validator(validate, _, _) ->
-    {ok, valid};
-validator(fix, _, _) ->
-    {error, invalid}.
-```
-
-
-
-**NB**: do not forget to include list index to validator function pattern match:
-
-```erlang
-validator(validate, [<<"list">>, _, <<"foobar">>], Value) when Value == 3.14 ->
-    {error, <<"PI_VALUE_IS_NOT_ALLOWED">>};
-validator(validate, _, _) ->
-    {ok, valid};
-validator(fix, _, _) ->
-    {error, invalid}.
-```
-
-
+In newer versions (0.5.0+) `Validator` function is to be passed for each term (see `/2` map constructor functions in `jiffy_v.erl` and `jiffy_vm.erl`). You can also see some examples in `test/*_tests.erl` files.
 
 Todo tasks
 ----------
 
 1. We can define `soft_list` type, which will be opposite to `strong_list` type, e.g. `{soft_list, [{string}, {integer}]}` will mean "list of strings or integers", not "list of strings or list of integers".
-2. Sometimes it may be useful to return erroneous field value in error tuple: `{ErrorCode, FieldPath, ErroneousValue}`. **NB**: this can be aaplied only to elementary types, not composite ones.
+2. Sometimes it may be useful to return erroneous field value in error tuple: `{ErrorCode, FieldPath, ErroneousValue}`. **NB**: this can be applied only to elementary types, not composite ones.
 3. It may be useful to add a little function to get data from decoded JSON term with XPath-style (to be used with `jiffy_v` module):
 
 ```erlang

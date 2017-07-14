@@ -62,62 +62,27 @@ can_get_undefined_field_error_test() ->
     {Errors, Result} = jiffy_vm:validate(Map, Data),
     ?assertEqual(1, length(Errors)),
     ?assertMatch(error, maps:find(<<"foo">>, Result)),
-    ?assertMatch([{<<"UNDEFINED_FIELD">>, <<"foo">>, [<<"foo">>]}], Errors).
+    ?assertMatch([{_, <<"foo">>, _}], Errors).
 
 
 
-can_pass_custom_hash_error_code_test() ->
-    Map = jiffy_vm:hash([
-        jiffy_vm:hashfield(<<"foo">>, required, jiffy_vm:integer())
-    ]),
-    Data = #{<<"foo">> => -1},
+
+can_get_validate_structure_test() ->
     Fun = fun
-        (validate, [<<"foo">>], Value) when Value < 0 ->
-            {error, <<"CUSTOM_ERROR_CODE">>};
-        (validate, _, _) ->
-            {ok, valid};
-        (fix, _, _) ->
-            {error, invalid}
+        (validate, [], Value) ->
+            case {maps:is_key(<<"bar">>, Value), maps:is_key(<<"baz">>, Value)} of
+                {Same, Same} ->
+                    {ok, valid};
+                {_, _} ->
+                    {error, <<"Both optional fields should be defined">>}
+            end
     end,
-    {Errors, Result} = jiffy_vm:validate(Map, Data, Fun),
+    Map = jiffy_vm:hash([
+        jiffy_vm:hashfield(<<"foo">>, required, jiffy_vm:integer()),
+        jiffy_vm:hashfield(<<"bar">>, optional, jiffy_vm:integer()),
+        jiffy_vm:hashfield(<<"baz">>, optional, jiffy_vm:integer())
+    ], Fun),
+    Data = #{<<"foo">> => 1, <<"bar">> => 1},
+    {Errors, Result} = jiffy_vm:validate(Map, Data),
     ?assertEqual(1, length(Errors)),
-    ?assertMatch(error, maps:find(<<"foo">>, Result)),
-    ?assertMatch([{<<"CUSTOM_ERROR_CODE">>, <<"foo">>, [<<"foo">>]}], Errors).
-
-
-
-can_fix_undefined_hash_field_test() ->
-    Map = jiffy_vm:hash([
-        jiffy_vm:hashfield(<<"foo">>, required, jiffy_vm:integer())
-    ]),
-    Data = #{<<"bar">> => 3.14},
-    Fun = fun
-        (fix, [<<"foo">>], undefined) ->
-            {ok, 15};
-        (validate, _, _) ->
-            {ok, valid};
-        (fix, _, _) ->
-            {error, invalid}
-    end,
-    {Errors, Result} = jiffy_vm:validate(Map, Data, Fun),
-    ?assertEqual(0, length(Errors)),
-    ?assertMatch({ok, 15}, maps:find(<<"foo">>, Result)).
-
-
-
-can_fix_invalid_hash_field_test() ->
-    Map = jiffy_vm:hash([
-        jiffy_vm:hashfield(<<"foo">>, required, jiffy_vm:integer())
-    ]),
-    Data = #{<<"foo">> => false},
-    Fun = fun
-        (fix, [<<"foo">>], _Value) ->
-            {ok, 0};
-        (validate, _, _) ->
-            {ok, valid};
-        (fix, _, _) ->
-            {error, invalid}
-    end,
-    {Errors, Result} = jiffy_vm:validate(Map, Data, Fun),
-    ?assertEqual(0, length(Errors)),
-    ?assertMatch({ok, 0}, maps:find(<<"foo">>, Result)).
+    ?assertMatch([{_, <<>>, _}], Errors).

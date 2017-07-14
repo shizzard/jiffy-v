@@ -27,33 +27,25 @@ can_get_valid_boolean_test() ->
 
 
 can_get_custom_boolean_error_code_test() ->
-    Map = jiffy_v:boolean(),
-    Data = false,
     Fun = fun
         (validate, [], false) ->
-            {error, <<"CUSTOM_ERROR_CODE">>};
-        (validate, _, _) ->
-            {ok, valid};
-        (fix, _, _) ->
-            {error, invalid}
+            {error, <<"CUSTOM_ERROR_CODE">>}
     end,
-    {Errors, _Result} = jiffy_v:validate(Map, Data, Fun),
+    Map = jiffy_v:boolean(Fun),
+    Data = false,
+    {Errors, _Result} = jiffy_v:validate(Map, Data),
     ?assertEqual(1, length(Errors)),
     ?assertMatch([{<<"CUSTOM_ERROR_CODE">>, <<>>, []}], Errors).
 
 
 
 can_fix_invalid_boolean_error_code_test() ->
-    Map = jiffy_v:boolean(),
-    Data = 1,
     Fun = fun
         (fix, [], 1) ->
-            {ok, true};
-        (validate, _, _) ->
-            {ok, valid};
-        (fix, _, _) ->
-            {error, invalid}
+            {ok, true}
     end,
-    {Errors, Result} = jiffy_v:validate(Map, Data, Fun),
+    Map = jiffy_v:boolean(Fun),
+    Data = 1,
+    {Errors, Result} = jiffy_v:validate(Map, Data),
     ?assertEqual(0, length(Errors)),
     ?assertMatch(true, Result).

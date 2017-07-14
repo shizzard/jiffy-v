@@ -38,33 +38,25 @@ can_get_valid_integer_as_float_test() ->
 
 
 can_get_custom_float_error_code_test() ->
-    Map = jiffy_vm:float(),
-    Data = 3.0,
     Fun = fun
         (validate, [], Value) when Value < 5 ->
-            {error, <<"CUSTOM_ERROR_CODE">>};
-        (validate, _, _) ->
-            {ok, valid};
-        (fix, _, _) ->
-            {error, invalid}
+            {error, <<"CUSTOM_ERROR_CODE">>}
     end,
-    {Errors, _Result} = jiffy_vm:validate(Map, Data, Fun),
+    Map = jiffy_vm:float(Fun),
+    Data = 3.0,
+    {Errors, _Result} = jiffy_vm:validate(Map, Data),
     ?assertEqual(1, length(Errors)),
     ?assertMatch([{<<"CUSTOM_ERROR_CODE">>, <<>>, []}], Errors).
 
 
 
 can_fix_invalid_float_test() ->
-    Map = jiffy_vm:float(),
-    Data = "2.19",
     Fun = fun
         (fix, [], Value) when is_list(Value) ->
-            {ok, list_to_float(Value)};
-        (validate, _, _) ->
-            {ok, valid};
-        (fix, _, _) ->
-            {error, invalid}
+            {ok, list_to_float(Value)}
     end,
-    {Errors, Result} = jiffy_vm:validate(Map, Data, Fun),
+    Map = jiffy_vm:float(Fun),
+    Data = "2.19",
+    {Errors, Result} = jiffy_vm:validate(Map, Data),
     ?assertEqual(0, length(Errors)),
     ?assertMatch(2.19, Result).

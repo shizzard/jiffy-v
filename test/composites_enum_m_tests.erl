@@ -27,33 +27,25 @@ can_get_valid_enum_test() ->
 
 
 can_get_custom_enum_error_code_test() ->
-    Map = jiffy_vm:enum([1,2,3]),
-    Data = 3,
     Fun = fun
         (validate, [], Value) when Value < 4 ->
-            {error, <<"CUSTOM_ERROR_CODE">>};
-        (validate, _, _) ->
-            {ok, valid};
-        (fix, _, _) ->
-            {error, invalid}
+            {error, <<"CUSTOM_ERROR_CODE">>}
     end,
-    {Errors, _Result} = jiffy_vm:validate(Map, Data, Fun),
+    Map = jiffy_vm:enum([1,2,3], Fun),
+    Data = 3,
+    {Errors, _Result} = jiffy_vm:validate(Map, Data),
     ?assertEqual(1, length(Errors)),
     ?assertMatch([{<<"CUSTOM_ERROR_CODE">>, <<>>, []}], Errors).
 
 
 
 can_fix_invalid_enum_test() ->
-    Map = jiffy_vm:enum([<<"male">>, <<"female">>]),
-    Data = 1,
     Fun = fun
         (fix, [], _Value) ->
-            {ok, <<"unknown">>};
-        (validate, _, _) ->
-            {ok, valid};
-        (fix, _, _) ->
-            {error, invalid}
+            {ok, <<"unknown">>}
     end,
-    {Errors, Result} = jiffy_vm:validate(Map, Data, Fun),
+    Map = jiffy_vm:enum([<<"male">>, <<"female">>], Fun),
+    Data = 1,
+    {Errors, Result} = jiffy_vm:validate(Map, Data),
     ?assertEqual(0, length(Errors)),
     ?assertMatch(<<"unknown">>, Result).
